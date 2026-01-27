@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">TaskFlow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav th:fragment="navbar" class="navbar">
+    <div class="navbar-brand">
+        <a th:href="@{/}" class="logo">TaskFlow</a>
+    </div>
+    <div class="navbar-actions">
+        <form th:action="@{/tasks/filter}" method="get" class="filter-form">
+            <input type="text" name="assignee" placeholder="Filter by assignee..."
+                   th:value="${filterAssignee}" class="filter-input">
+            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+            <a th:href="@{/}" class="btn btn-secondary btn-sm">Clear</a>
+        </form>
+        <a th:href="@{/tasks/new}" class="btn btn-primary">+ New Task</a>
+    </div>
+</nav>
+</body>
+</html>

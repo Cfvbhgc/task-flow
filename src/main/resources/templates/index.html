@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: head('TaskFlow - Kanban Board')}">
+    <title>TaskFlow</title>
+</head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<main class="board-container">
+    <!-- Success flash message -->
+    <div th:if="${successMessage}" class="alert alert-success" id="flashMessage">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+
+    <div class="kanban-board">
+        <!-- TODO Column -->
+        <div class="kanban-column" data-status="TODO">
+            <div class="column-header column-todo">
+                <h2>To Do</h2>
+                <span class="task-count" th:text="${#lists.size(todoTasks)}">0</span>
+            </div>
+            <div class="column-body" id="todo-column"
+                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div th:each="task : ${todoTasks}" th:attr="data-task-id=${task.id}"
+                     class="task-card" draggable="true" ondragstart="handleDragStart(event)">
+                    <div class="task-card-header">
+                        <span class="priority-badge"
+                              th:classappend="'priority-' + ${task.priority.name().toLowerCase()}"
+                              th:text="${task.priority.label}">Medium</span>
+                    </div>
+                    <h3 class="task-title" th:text="${task.title}">Task Title</h3>
+                    <p class="task-description" th:if="${task.description}"
+                       th:text="${#strings.abbreviate(task.description, 100)}">Description</p>
+                    <div class="task-meta">
+                        <span th:if="${task.assignee}" class="task-assignee" th:text="${task.assignee}">Assignee</span>
+                        <span th:if="${task.deadline}" class="task-deadline" th:text="${task.deadline}">Deadline</span>
+                    </div>
+                    <div class="task-actions">
+                        <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete this task?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(todoTasks)}" class="empty-column">
+                    <p>No tasks yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- IN PROGRESS Column -->
+        <div class="kanban-column" data-status="IN_PROGRESS">
+            <div class="column-header column-in-progress">
+                <h2>In Progress</h2>
+                <span class="task-count" th:text="${#lists.size(inProgressTasks)}">0</span>
+            </div>
+            <div class="column-body" id="in-progress-column"
+                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div th:each="task : ${inProgressTasks}" th:attr="data-task-id=${task.id}"
+                     class="task-card" draggable="true" ondragstart="handleDragStart(event)">
+                    <div class="task-card-header">
+                        <span class="priority-badge"
+                              th:classappend="'priority-' + ${task.priority.name().toLowerCase()}"
+                              th:text="${task.priority.label}">Medium</span>
+                    </div>
+                    <h3 class="task-title" th:text="${task.title}">Task Title</h3>
+                    <p class="task-description" th:if="${task.description}"
+                       th:text="${#strings.abbreviate(task.description, 100)}">Description</p>
+                    <div class="task-meta">
+                        <span th:if="${task.assignee}" class="task-assignee" th:text="${task.assignee}">Assignee</span>
+                        <span th:if="${task.deadline}" class="task-deadline" th:text="${task.deadline}">Deadline</span>
+                    </div>
+                    <div class="task-actions">
+                        <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete this task?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(inProgressTasks)}" class="empty-column">
+                    <p>No tasks in progress</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONE Column -->
+        <div class="kanban-column" data-status="DONE">
+            <div class="column-header column-done">
+                <h2>Done</h2>
+                <span class="task-count" th:text="${#lists.size(doneTasks)}">0</span>
+            </div>
+            <div class="column-body" id="done-column"
+                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div th:each="task : ${doneTasks}" th:attr="data-task-id=${task.id}"
+                     class="task-card" draggable="true" ondragstart="handleDragStart(event)">
+                    <div class="task-card-header">
+                        <span class="priority-badge"
+                              th:classappend="'priority-' + ${task.priority.name().toLowerCase()}"
+                              th:text="${task.priority.label}">Medium</span>
+                    </div>
+                    <h3 class="task-title" th:text="${task.title}">Task Title</h3>
+                    <p class="task-description" th:if="${task.description}"
+                       th:text="${#strings.abbreviate(task.description, 100)}">Description</p>
+                    <div class="task-meta">
+                        <span th:if="${task.assignee}" class="task-assignee" th:text="${task.assignee}">Assignee</span>
+                        <span th:if="${task.deadline}" class="task-deadline" th:text="${task.deadline}">Deadline</span>
+                    </div>
+                    <div class="task-actions">
+                        <a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post" class="inline-form">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete this task?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(doneTasks)}" class="empty-column">
+                    <p>No completed tasks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:src="@{/js/kanban.js}"></script>
+</body>
+</html>

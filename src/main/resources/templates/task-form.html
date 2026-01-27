@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: head(${isEdit} ? 'Edit Task' : 'New Task')}">
+    <title>Task Form</title>
+</head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<main class="form-container">
+    <div class="form-card">
+        <h1 th:text="${isEdit} ? 'Edit Task' : 'Create New Task'" class="form-title">Task Form</h1>
+
+        <form th:action="${isEdit} ? @{/tasks/{id}(id=${taskId})} : @{/tasks}"
+              th:object="${task}" method="post" class="task-form">
+
+            <div class="form-group">
+                <label for="title" class="form-label">Title *</label>
+                <input type="text" id="title" th:field="*{title}" class="form-input"
+                       placeholder="Enter task title" required maxlength="255">
+                <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"
+                      class="form-error">Title error</span>
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" th:field="*{description}" class="form-input form-textarea"
+                          placeholder="Enter task description" rows="4"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" th:field="*{status}" class="form-input">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.displayName}">Status</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority" class="form-label">Priority</label>
+                    <select id="priority" th:field="*{priority}" class="form-input">
+                        <option th:each="p : ${priorities}" th:value="${p}" th:text="${p.label}">Priority</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="assignee" class="form-label">Assignee</label>
+                    <input type="text" id="assignee" th:field="*{assignee}" class="form-input"
+                           placeholder="Assign to someone" maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="deadline" class="form-label">Deadline</label>
+                    <input type="date" id="deadline" th:field="*{deadline}" class="form-input">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"
+                        th:text="${isEdit} ? 'Update Task' : 'Create Task'">Submit</button>
+                <a th:href="@{/}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
